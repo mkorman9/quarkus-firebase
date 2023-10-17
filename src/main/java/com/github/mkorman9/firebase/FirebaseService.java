@@ -31,7 +31,7 @@ public class FirebaseService {
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
 
-    @ConfigProperty(name = "firebase.emulator.project-id", defaultValue = "DEFAULT")
+    @ConfigProperty(name = "firebase.emulator.project-id", defaultValue = "emulator-project")
     String emulatorProjectId;
 
     @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")

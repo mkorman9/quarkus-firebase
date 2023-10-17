@@ -4,7 +4,7 @@ Example of Quarkus HTTP API with Bearer-Token authorization based on Firebase Au
 
 ## Start locally with Firebase emulator
 
-- Make sure that the project id in `emulator/.firebaserc` matches project id in `application.properties`
+- Make sure that the project id in `emulator/.firebaserc` is set to `emulator-project`
 - Start emulator
 ```sh
 cd emulator

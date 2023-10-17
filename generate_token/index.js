@@ -20,7 +20,7 @@ readFile(`${profile}.json`, {}, (err, data) => {
 
     signInAnonymously(auth)
         .then(credentials => {
-            console.log(`uid = ${credentials.user.uid}`)
+            console.log(`uid = ${credentials.user.uid}`);
             return credentials.user.getIdToken();
         })
         .then(token => console.log(`token = ${token}`))

@@ -1,6 +1,7 @@
 package com.github.mkorman9.firebase;
 
 import com.google.firebase.auth.FirebaseToken;
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -13,6 +14,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 @ApplicationScoped
+@UnlessBuildProfile("test")
 public class AuthorizationInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_TYPE = "Bearer";

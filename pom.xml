@@ -50,6 +50,11 @@
 
         <!-- Other -->
         <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-native-epoll</artifactId>
+            <classifier>linux-x86_64</classifier>
+        </dependency>
+        <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>9.2.0</version>

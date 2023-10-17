@@ -1,0 +1,13 @@
+{
+  "name": "generate-token",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate-for-emulator": "node index.js emulator",
+    "generate-for-production": "node index.js production"
+  },
+  "dependencies": {
+    "firebase": "^9.23.0"
+  }
+}

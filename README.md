@@ -11,6 +11,12 @@ cd emulator
 firebase emulators:start
 ```
 - Run the app via IDE
+- Tokens for testing can be generated with
+```sh
+cd generate_token
+npm ci
+npm run-script generate-for-emulator
+```
 
 ## Start locally without emulator
 
@@ -18,6 +24,13 @@ firebase emulators:start
 - Go to Project settings -> Service accounts -> Generate new private key, save it as `firebase-credentials.json` 
 in the project root directory
 - Comment out `%dev.firebase.emulator.enabled=true` in `application.properties` file
+- Run the app via IDE
+- Tokens for testing can be generated with
+```sh
+cd generate_token
+npm ci
+npm run-script generate-for-production
+```
 
 ## Setup application container
 

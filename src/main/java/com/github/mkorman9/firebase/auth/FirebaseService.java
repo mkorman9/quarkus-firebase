@@ -1,4 +1,4 @@
-package com.github.mkorman9.firebase;
+package com.github.mkorman9.firebase.auth;
 
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -9,9 +9,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.internal.EmulatorCredentials;
 import com.google.firebase.internal.FirebaseProcessEnvironment;
+import io.quarkus.arc.profile.UnlessBuildProfile;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.StartupEvent;
 import io.smallrye.mutiny.subscription.UniEmitter;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -21,6 +24,7 @@ import java.io.FileInputStream;
 
 @ApplicationScoped
 @Slf4j
+@UnlessBuildProfile("test")
 public class FirebaseService {
     private FirebaseApp firebaseApp;
     private FirebaseAuth firebaseAuth;
@@ -40,8 +44,7 @@ public class FirebaseService {
     @ConfigProperty(name = "firebase.credentials-path", defaultValue = "firebase-credentials.json")
     String credentialsPath;
 
-    @PostConstruct
-    public void setup() {
+    public void onStartup(@Observes StartupEvent startupEvent) {
         try {
             // delete default app instance to prevent problems with hot reloads
             try {
@@ -67,6 +70,7 @@ public class FirebaseService {
             this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
         } catch (Exception e) {
             log.error("Failed to initialize Firebase", e);
+            Quarkus.asyncExit(1);
         }
     }
 

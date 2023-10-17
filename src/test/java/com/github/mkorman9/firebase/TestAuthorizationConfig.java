@@ -1,5 +1,6 @@
 package com.github.mkorman9.firebase;
 
+import com.github.mkorman9.firebase.auth.FirebaseUserPrincipal;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;

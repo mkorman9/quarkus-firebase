@@ -1,4 +1,4 @@
-package com.github.mkorman9.firebase;
+package com.github.mkorman9.firebase.auth;
 
 import com.google.firebase.auth.FirebaseToken;
 import io.quarkus.arc.profile.UnlessBuildProfile;

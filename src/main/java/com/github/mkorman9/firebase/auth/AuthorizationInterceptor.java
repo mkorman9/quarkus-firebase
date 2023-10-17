@@ -60,10 +60,12 @@ public class AuthorizationInterceptor {
     }
 
     private SecurityContext createSecurityContext(FirebaseToken firebaseToken) {
+        var userPrinciple = new FirebaseUserPrincipal(firebaseToken);
+
         return new SecurityContext() {
             @Override
             public Principal getUserPrincipal() {
-                return new FirebaseUserPrincipal(firebaseToken);
+                return userPrinciple;
             }
 
             @Override

@@ -1,6 +1,5 @@
 package com.github.mkorman9.firebase;
 
-import com.google.firebase.auth.FirebaseToken;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
@@ -16,14 +15,14 @@ public class TestAuthorizationConfig {
     private static final FirebaseUserPrincipal MOCK_PRINCIPAL = Mockito.mock(FirebaseUserPrincipal.class);
     private static boolean isAuthorized = false;
 
-    public static PrincipalFieldsBuilder mockAuthorization(String uid) {
+    public static PrincipalFieldsBuilder mockPrincipal(String uid) {
         Mockito.when(MOCK_PRINCIPAL.getName()).thenReturn(uid);
         isAuthorized = true;
 
         return new PrincipalFieldsBuilder();
     }
 
-    public static void resetAuthorization() {
+    public static void reset() {
         Mockito.reset(MOCK_PRINCIPAL);
         isAuthorized = false;
     }

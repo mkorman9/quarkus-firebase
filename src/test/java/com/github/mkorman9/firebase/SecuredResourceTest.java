@@ -11,14 +11,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SecuredResourceTest {
     @AfterEach
     public void tearDown() {
-        TestAuthorizationConfig.resetAuthorization();
+        TestAuthorizationConfig.reset();
     }
 
     @Test
     public void shouldAuthorizeWithProperUid() {
         // given
         var uid = "test_user";
-        TestAuthorizationConfig.mockAuthorization(uid);
+        TestAuthorizationConfig.mockPrincipal(uid);
 
         // when
         var whoami = given()

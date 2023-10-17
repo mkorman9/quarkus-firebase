@@ -23,8 +23,8 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import java.io.FileInputStream;
 
 @ApplicationScoped
-@Slf4j
 @UnlessBuildProfile("test")
+@Slf4j
 public class FirebaseService {
     private FirebaseApp firebaseApp;
     private FirebaseAuth firebaseAuth;

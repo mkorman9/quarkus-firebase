@@ -7,15 +7,20 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.internal.EmulatorCredentials;
+import com.google.firebase.internal.FirebaseProcessEnvironment;
 import io.smallrye.mutiny.subscription.UniEmitter;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.context.ManagedExecutor;
 
-import java.io.IOException;
+import java.io.FileInputStream;
 
 @ApplicationScoped
+@Slf4j
 public class FirebaseService {
     private FirebaseApp firebaseApp;
     private FirebaseAuth firebaseAuth;
@@ -23,14 +28,46 @@ public class FirebaseService {
     @Inject
     ManagedExecutor managedExecutor;
 
+    @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
+    boolean emulatorEnabled;
+
+    @ConfigProperty(name = "firebase.emulator.project-id", defaultValue = "DEFAULT")
+    String emulatorProjectId;
+
+    @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")
+    String authEmulatorUrl;
+
+    @ConfigProperty(name = "firebase.credentials-path", defaultValue = "firebase-credentials.json")
+    String credentialsPath;
+
     @PostConstruct
-    public void setup() throws IOException {
-        this.firebaseApp = FirebaseApp.initializeApp(
-            FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .build()
-        );
-        this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+    public void setup() {
+        try {
+            // delete default app instance to prevent problems with hot reloads
+            try {
+                FirebaseApp.getInstance().delete();
+            } catch (IllegalStateException e) {
+                // ignore
+            }
+
+            FirebaseOptions firebaseOptions;
+            if (emulatorEnabled) {
+                FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
+                firebaseOptions = FirebaseOptions.builder()
+                    .setProjectId(emulatorProjectId)
+                    .setCredentials(new EmulatorCredentials())
+                    .build();
+            } else {
+                firebaseOptions = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)))
+                    .build();
+            }
+
+            this.firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
+            this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+        } catch (Exception e) {
+            log.error("Failed to initialize Firebase", e);
+        }
     }
 
     public void verifyTokenAsync(String token, UniEmitter<? super FirebaseToken> emitter) {

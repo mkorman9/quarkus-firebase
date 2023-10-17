@@ -60,10 +60,14 @@ public class FirebaseService {
                     .setProjectId(emulatorProjectId)
                     .setCredentials(new EmulatorCredentials())
                     .build();
+
+                log.info("Firebase integration is running in emulator mode");
             } else {
                 firebaseOptions = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)))
                     .build();
+
+                log.info("Firebase integration is running in production mode");
             }
 
             this.firebaseApp = FirebaseApp.initializeApp(firebaseOptions);

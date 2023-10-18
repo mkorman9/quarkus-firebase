@@ -14,13 +14,14 @@ import java.util.Map;
 @ApplicationScoped
 public class TestAuthorizationConfig {
     private static final FirebaseUserPrincipal MOCK_PRINCIPAL = Mockito.mock(FirebaseUserPrincipal.class);
+    private static final PrincipalFieldsBuilder PRINCIPAL_FIELDS_BUILDER = new PrincipalFieldsBuilder();
     private static boolean isAuthorized = false;
 
     public static PrincipalFieldsBuilder mockPrincipal(String uid) {
         Mockito.when(MOCK_PRINCIPAL.getName()).thenReturn(uid);
         isAuthorized = true;
 
-        return new PrincipalFieldsBuilder();
+        return PRINCIPAL_FIELDS_BUILDER;
     }
 
     public static void reset() {

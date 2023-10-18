@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.internal.EmulatorCredentials;
 import com.google.firebase.internal.FirebaseProcessEnvironment;
+import io.quarkus.runtime.ExecutorRecorder;
 import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
@@ -16,10 +17,8 @@ import io.quarkus.runtime.configuration.ProfileManager;
 import io.smallrye.mutiny.subscription.UniEmitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.context.ManagedExecutor;
 
 import java.io.FileInputStream;
 
@@ -27,9 +26,6 @@ import java.io.FileInputStream;
 @Slf4j
 public class FirebaseService {
     private FirebaseAuth firebaseAuth;
-
-    @Inject
-    ManagedExecutor managedExecutor;
 
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
@@ -96,7 +92,7 @@ public class FirebaseService {
                     emitter.fail(throwable);
                 }
             },
-            managedExecutor
+            ExecutorRecorder.getCurrent()
         );
     }
 }

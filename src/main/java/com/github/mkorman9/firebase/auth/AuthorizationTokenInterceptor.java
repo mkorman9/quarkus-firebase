@@ -1,6 +1,5 @@
 package com.github.mkorman9.firebase.auth;
 
-import com.google.firebase.auth.FirebaseToken;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,8 +31,8 @@ public class AuthorizationTokenInterceptor {
         var token = maybeToken.get();
 
         return Uni.createFrom()
-            .<FirebaseToken>emitter(emitter -> firebaseService.verifyTokenAsync(token, emitter))
-            .onItem().invoke(firebaseToken -> context.setSecurityContext(createSecurityContext(firebaseToken)))
+            .<FirebaseAuthorization>emitter(emitter -> firebaseService.verifyTokenAsync(token, emitter))
+            .onItem().invoke(firebaseAuth -> context.setSecurityContext(createSecurityContext(firebaseAuth)))
             .onFailure().recoverWithNull()
             .replaceWithVoid();
     }
@@ -54,9 +53,7 @@ public class AuthorizationTokenInterceptor {
         return Optional.of(headerParts[1]);
     }
 
-    private SecurityContext createSecurityContext(FirebaseToken firebaseToken) {
-        var authorization = new FirebaseAuthorization(firebaseToken);
-
+    private SecurityContext createSecurityContext(FirebaseAuthorization authorization) {
         return new SecurityContext() {
             @Override
             public Principal getUserPrincipal() {

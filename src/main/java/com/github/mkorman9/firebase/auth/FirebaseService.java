@@ -77,14 +77,14 @@ public class FirebaseService {
         }
     }
 
-    public void verifyTokenAsync(String token, UniEmitter<? super FirebaseToken> emitter) {
+    public void verifyTokenAsync(String token, UniEmitter<? super FirebaseAuthorization> emitter) {
         var future = firebaseAuth.verifyIdTokenAsync(token);
         ApiFutures.addCallback(
             future,
             new ApiFutureCallback<>() {
                 @Override
                 public void onSuccess(FirebaseToken firebaseToken) {
-                    emitter.complete(firebaseToken);
+                    emitter.complete(new FirebaseAuthorization(firebaseToken));
                 }
 
                 @Override

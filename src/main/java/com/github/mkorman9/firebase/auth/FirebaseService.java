@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 @ApplicationScoped
 @Slf4j
 public class FirebaseService {
-    private FirebaseApp firebaseApp;
     private FirebaseAuth firebaseAuth;
 
     @Inject
@@ -74,7 +73,7 @@ public class FirebaseService {
                 log.info("Firebase integration is running in production mode");
             }
 
-            this.firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
+            var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
             this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
         } catch (Exception e) {
             log.error("Failed to initialize Firebase", e);

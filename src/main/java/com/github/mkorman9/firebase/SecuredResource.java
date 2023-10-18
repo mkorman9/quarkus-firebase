@@ -7,16 +7,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/secured")
 @Produces(MediaType.APPLICATION_JSON)
 public class SecuredResource {
     @GET
     @Authenticated
-    public WhoamiResponse getWhoami(@Context SecurityContext securityContext) {
-        var user = (FirebaseUserPrincipal) securityContext.getUserPrincipal();
-        return new WhoamiResponse(user.getName());
+    public WhoamiResponse getWhoami(@Context FirebaseUserPrincipal principal) {
+        return new WhoamiResponse(principal.getName());
     }
 
     public record WhoamiResponse(

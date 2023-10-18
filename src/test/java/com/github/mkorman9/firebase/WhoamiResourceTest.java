@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
-class SecuredResourceTest {
+class WhoamiResourceTest {
     @AfterEach
     public void tearDown() {
         TestAuthorizationConfig.reset();
@@ -25,7 +25,7 @@ class SecuredResourceTest {
             .when().get("/secured")
             .then()
             .statusCode(200)
-            .extract().body().as(SecuredResource.WhoamiResponse.class);
+            .extract().body().as(WhoamiResource.WhoamiResponse.class);
 
         // then
         assertThat(whoami.uid()).isEqualTo(uid);
@@ -37,5 +37,18 @@ class SecuredResourceTest {
             .when().get("/secured")
             .then()
             .statusCode(401);
+    }
+
+    @Test
+    public void shouldAllowUnsecuredEndpointAccess() {
+        // given when
+        var whoami = given()
+            .when().get("/unsecured")
+            .then()
+            .statusCode(200)
+            .extract().body().as(WhoamiResource.WhoamiResponse.class);
+
+        // then
+        assertThat(whoami.uid()).isEqualTo("anonymous");
     }
 }

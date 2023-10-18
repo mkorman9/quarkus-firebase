@@ -8,13 +8,20 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/secured")
+@Path("/")
 @Produces(MediaType.APPLICATION_JSON)
-public class SecuredResource {
+public class WhoamiResource {
     @GET
+    @Path("/secured")
     @Authenticated
-    public WhoamiResponse getWhoami(@Context FirebaseUserPrincipal principal) {
+    public WhoamiResponse getWhoamiSecured(@Context FirebaseUserPrincipal principal) {
         return new WhoamiResponse(principal.getName());
+    }
+
+    @GET
+    @Path("/unsecured")
+    public WhoamiResponse getWhoamiUnsecured() {
+        return new WhoamiResponse("anonymous");
     }
 
     public record WhoamiResponse(

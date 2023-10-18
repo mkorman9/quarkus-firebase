@@ -37,7 +37,7 @@ public class AuthorizationTokenInterceptor {
             .replaceWithVoid();
     }
 
-    public static Optional<String> extractToken(ContainerRequestContext context) {
+    public Optional<String> extractToken(ContainerRequestContext context) {
         var headerValue = context
             .getHeaders()
             .getFirst(AUTHORIZATION_HEADER);

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
-public class AuthorizationInterceptor {
+public class AuthorizationTokenInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String TOKEN_TYPE = "Bearer";
 
@@ -55,12 +55,12 @@ public class AuthorizationInterceptor {
     }
 
     private SecurityContext createSecurityContext(FirebaseToken firebaseToken) {
-        var userPrinciple = new FirebaseUserPrincipal(firebaseToken);
+        var authorization = new FirebaseAuthorization(firebaseToken);
 
         return new SecurityContext() {
             @Override
             public Principal getUserPrincipal() {
-                return userPrinciple;
+                return authorization;
             }
 
             @Override

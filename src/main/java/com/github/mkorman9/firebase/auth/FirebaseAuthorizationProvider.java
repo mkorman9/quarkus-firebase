@@ -6,15 +6,15 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 
 @RequestScoped
-public class FirebaseUserPrincipalProvider {
+public class FirebaseAuthorizationProvider {
     @Produces
-    public FirebaseUserPrincipal provideFirebaseUserPrincipal(@Context SecurityContext securityContext) {
+    public FirebaseAuthorization provideFirebaseAuthorization(@Context SecurityContext securityContext) {
         if (securityContext == null) {
             return null;
         }
 
         try {
-            return (FirebaseUserPrincipal) securityContext.getUserPrincipal();
+            return (FirebaseAuthorization) securityContext.getUserPrincipal();
         } catch (ClassCastException e) {
             return null;
         }

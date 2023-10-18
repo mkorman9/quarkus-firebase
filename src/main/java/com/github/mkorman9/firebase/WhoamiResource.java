@@ -1,6 +1,6 @@
 package com.github.mkorman9.firebase;
 
-import com.github.mkorman9.firebase.auth.FirebaseUserPrincipal;
+import com.github.mkorman9.firebase.auth.FirebaseAuthorization;
 import io.quarkus.security.Authenticated;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -14,8 +14,8 @@ public class WhoamiResource {
     @GET
     @Path("/secured")
     @Authenticated
-    public WhoamiResponse getWhoamiSecured(@Context FirebaseUserPrincipal principal) {
-        return new WhoamiResponse(principal.getName());
+    public WhoamiResponse getWhoamiSecured(@Context FirebaseAuthorization authorization) {
+        return new WhoamiResponse(authorization.getUid());
     }
 
     @GET

@@ -12,44 +12,45 @@ import java.util.Map;
 
 @ApplicationScoped
 public class TestAuthorizationConfig {
-    private static final FirebaseUserPrincipal MOCK_PRINCIPAL = Mockito.mock(FirebaseUserPrincipal.class);
+    private static final FirebaseAuthorization MOCK_AUTHORIZATION = Mockito.mock(FirebaseAuthorization.class);
     private static boolean isAuthorized = false;
 
     public static void mockUid(String uid) {
-        Mockito.when(MOCK_PRINCIPAL.getName()).thenReturn(uid);
+        Mockito.when(MOCK_AUTHORIZATION.getUid()).thenReturn(uid);
+        Mockito.when(MOCK_AUTHORIZATION.getName()).thenReturn(uid);
         isAuthorized = true;
     }
 
     public static void mockTenantId(String tenantId) {
-        Mockito.when(MOCK_PRINCIPAL.getTenantId()).thenReturn(tenantId);
+        Mockito.when(MOCK_AUTHORIZATION.getTenantId()).thenReturn(tenantId);
     }
 
     public static void mockIssuer(String issuer) {
-        Mockito.when(MOCK_PRINCIPAL.getIssuer()).thenReturn(issuer);
+        Mockito.when(MOCK_AUTHORIZATION.getIssuer()).thenReturn(issuer);
     }
 
     public static void mockDisplayName(String displayName) {
-        Mockito.when(MOCK_PRINCIPAL.getDisplayName()).thenReturn(displayName);
+        Mockito.when(MOCK_AUTHORIZATION.getDisplayName()).thenReturn(displayName);
     }
 
     public static void mockPicture(String picture) {
-        Mockito.when(MOCK_PRINCIPAL.getPicture()).thenReturn(picture);
+        Mockito.when(MOCK_AUTHORIZATION.getPicture()).thenReturn(picture);
     }
 
     public static void mockEmail(String email) {
-        Mockito.when(MOCK_PRINCIPAL.getEmail()).thenReturn(email);
+        Mockito.when(MOCK_AUTHORIZATION.getEmail()).thenReturn(email);
     }
 
     public static void mockEmailVerified(boolean isEmailVerified) {
-        Mockito.when(MOCK_PRINCIPAL.isEmailVerified()).thenReturn(isEmailVerified);
+        Mockito.when(MOCK_AUTHORIZATION.isEmailVerified()).thenReturn(isEmailVerified);
     }
 
     public static void mockClaims(Map<String, Object> claims) {
-        Mockito.when(MOCK_PRINCIPAL.getClaims()).thenReturn(claims);
+        Mockito.when(MOCK_AUTHORIZATION.getClaims()).thenReturn(claims);
     }
 
     public static void reset() {
-        Mockito.reset(MOCK_PRINCIPAL);
+        Mockito.reset(MOCK_AUTHORIZATION);
         isAuthorized = false;
     }
 
@@ -64,7 +65,7 @@ public class TestAuthorizationConfig {
         return new SecurityContext() {
             @Override
             public Principal getUserPrincipal() {
-                return MOCK_PRINCIPAL;
+                return MOCK_AUTHORIZATION;
             }
 
             @Override

@@ -5,15 +5,19 @@ import com.google.firebase.auth.FirebaseToken;
 import java.security.Principal;
 import java.util.Map;
 
-public class FirebaseUserPrincipal implements Principal {
+public class FirebaseAuthorization implements Principal {
     private final FirebaseToken firebaseToken;
 
-    public FirebaseUserPrincipal(FirebaseToken firebaseToken) {
+    public FirebaseAuthorization(FirebaseToken firebaseToken) {
         this.firebaseToken = firebaseToken;
     }
 
     @Override
     public String getName() {
+        return getUid();
+    }
+
+    public String getUid() {
         return firebaseToken.getUid();
     }
 

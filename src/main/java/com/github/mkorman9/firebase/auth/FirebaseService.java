@@ -9,9 +9,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.internal.EmulatorCredentials;
 import com.google.firebase.internal.FirebaseProcessEnvironment;
-import io.quarkus.arc.profile.UnlessBuildProfile;
+import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.configuration.ProfileManager;
 import io.smallrye.mutiny.subscription.UniEmitter;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -23,7 +24,6 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import java.io.FileInputStream;
 
 @ApplicationScoped
-@UnlessBuildProfile("test")
 @Slf4j
 public class FirebaseService {
     private FirebaseApp firebaseApp;
@@ -45,6 +45,10 @@ public class FirebaseService {
     String credentialsPath;
 
     public void onStartup(@Observes StartupEvent startupEvent) {
+        if (ProfileManager.getLaunchMode() == LaunchMode.TEST) {
+            return;
+        }
+
         try {
             // delete default app instance to prevent problems with hot reloads
             try {

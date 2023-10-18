@@ -14,7 +14,8 @@ import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.configuration.ProfileManager;
-import io.smallrye.mutiny.subscription.UniEmitter;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import lombok.extern.slf4j.Slf4j;
@@ -77,22 +78,25 @@ public class FirebaseService {
         }
     }
 
-    public void verifyTokenAsync(String token, UniEmitter<? super FirebaseAuthorization> emitter) {
+    public Future<FirebaseAuthorization> verifyTokenAsync(String token) {
+        var promise = Promise.<FirebaseAuthorization>promise();
         var future = firebaseAuth.verifyIdTokenAsync(token);
         ApiFutures.addCallback(
             future,
             new ApiFutureCallback<>() {
                 @Override
                 public void onSuccess(FirebaseToken firebaseToken) {
-                    emitter.complete(new FirebaseAuthorization(firebaseToken));
+                    promise.complete(new FirebaseAuthorization(firebaseToken));
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    emitter.fail(throwable);
+                    promise.fail(throwable);
                 }
             },
             ExecutorRecorder.getCurrent()
         );
+
+        return promise.future();
     }
 }

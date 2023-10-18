@@ -1,7 +1,7 @@
 package com.github.mkorman9.firebase;
 
+import com.github.mkorman9.firebase.auth.WithFirebaseAuthorization;
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -9,18 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusTest
 class WhoamiResourceTest {
-    @AfterEach
-    public void tearDown() {
-        TestAuthorizationConfig.reset();
-    }
-
     @Test
+    @WithFirebaseAuthorization(uid = "test_user")
     public void shouldAuthorizeWithProperUid() {
-        // given
-        var uid = "test_user";
-        TestAuthorizationConfig.mockPrincipal(uid);
-
-        // when
+        // given when
         var whoami = given()
             .when().get("/secured")
             .then()
@@ -28,7 +20,7 @@ class WhoamiResourceTest {
             .extract().body().as(WhoamiResource.WhoamiResponse.class);
 
         // then
-        assertThat(whoami.uid()).isEqualTo(uid);
+        assertThat(whoami.uid()).isEqualTo("test_user");
     }
 
     @Test

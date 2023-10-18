@@ -32,13 +32,8 @@ public class AuthorizationInterceptor {
         var token = maybeToken.get();
 
         return Uni.createFrom()
-            .<FirebaseToken>emitter(emitter -> {
-                firebaseService.verifyTokenAsync(token, emitter);
-            })
-            .onItem().transform(firebaseToken -> {
-                context.setSecurityContext(createSecurityContext(firebaseToken));
-                return null;
-            })
+            .<FirebaseToken>emitter(emitter -> firebaseService.verifyTokenAsync(token, emitter))
+            .onItem().invoke(firebaseToken -> context.setSecurityContext(createSecurityContext(firebaseToken)))
             .onFailure().recoverWithNull()
             .replaceWithVoid();
     }

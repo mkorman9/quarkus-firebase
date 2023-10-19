@@ -11,7 +11,6 @@ import com.google.firebase.internal.EmulatorCredentials;
 import com.google.firebase.internal.FirebaseProcessEnvironment;
 import io.quarkus.runtime.ExecutorRecorder;
 import io.quarkus.runtime.LaunchMode;
-import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.configuration.ProfileManager;
 import io.vertx.core.Future;
@@ -40,42 +39,37 @@ public class FirebaseService {
     @ConfigProperty(name = "firebase.credentials-path", defaultValue = "firebase-credentials.json")
     String credentialsPath;
 
-    public void onStartup(@Observes StartupEvent startupEvent) {
+    public void onStartup(@Observes StartupEvent startupEvent) throws Exception {
         if (ProfileManager.getLaunchMode() == LaunchMode.TEST) {
             return;
         }
 
+        // delete default app instance to prevent problems with hot reloads
         try {
-            // delete default app instance to prevent problems with hot reloads
-            try {
-                FirebaseApp.getInstance().delete();
-            } catch (IllegalStateException e) {
-                // ignore
-            }
-
-            FirebaseOptions firebaseOptions;
-            if (emulatorEnabled) {
-                FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
-                firebaseOptions = FirebaseOptions.builder()
-                    .setProjectId(emulatorProjectId)
-                    .setCredentials(new EmulatorCredentials())
-                    .build();
-
-                log.info("Firebase integration is running in emulator mode");
-            } else {
-                firebaseOptions = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)))
-                    .build();
-
-                log.info("Firebase integration is running in production mode");
-            }
-
-            var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
-            this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
-        } catch (Exception e) {
-            log.error("Failed to initialize Firebase", e);
-            Quarkus.asyncExit(1);
+            FirebaseApp.getInstance().delete();
+        } catch (IllegalStateException e) {
+            // ignore
         }
+
+        FirebaseOptions firebaseOptions;
+        if (emulatorEnabled) {
+            FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
+            firebaseOptions = FirebaseOptions.builder()
+                .setProjectId(emulatorProjectId)
+                .setCredentials(new EmulatorCredentials())
+                .build();
+
+            log.info("Firebase integration is running in emulator mode");
+        } else {
+            firebaseOptions = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)))
+                .build();
+
+            log.info("Firebase integration is running in production mode");
+        }
+
+        var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
+        this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
     }
 
     public Future<FirebaseAuthorization> verifyTokenAsync(String token) {

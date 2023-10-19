@@ -25,8 +25,6 @@ import java.io.FileInputStream;
 @ApplicationScoped
 @Slf4j
 public class FirebaseService {
-    private FirebaseAuth firebaseAuth;
-
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
 
@@ -69,12 +67,12 @@ public class FirebaseService {
         }
 
         var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
-        this.firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
+        FirebaseAuth.getInstance(firebaseApp);
     }
 
     public Future<FirebaseAuthorization> verifyTokenAsync(String token) {
         var promise = Promise.<FirebaseAuthorization>promise();
-        var future = firebaseAuth.verifyIdTokenAsync(token);
+        var future = FirebaseAuth.getInstance().verifyIdTokenAsync(token);
         ApiFutures.addCallback(
             future,
             new ApiFutureCallback<>() {

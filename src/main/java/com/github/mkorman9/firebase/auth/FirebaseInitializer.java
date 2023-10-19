@@ -6,9 +6,8 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.internal.EmulatorCredentials;
 import com.google.firebase.internal.FirebaseProcessEnvironment;
-import io.quarkus.runtime.LaunchMode;
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.runtime.StartupEvent;
-import io.quarkus.runtime.configuration.ProfileManager;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +16,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.io.FileInputStream;
 
 @ApplicationScoped
+@UnlessBuildProfile("test")
 @Slf4j
 public class FirebaseInitializer {
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
@@ -32,10 +32,6 @@ public class FirebaseInitializer {
     String credentialsPath;
 
     public void onStartup(@Observes StartupEvent startupEvent) throws Exception {
-        if (ProfileManager.getLaunchMode() == LaunchMode.TEST) {
-            return;
-        }
-
         // delete default app instance to prevent problems with hot reloads
         try {
             FirebaseApp.getInstance().delete();

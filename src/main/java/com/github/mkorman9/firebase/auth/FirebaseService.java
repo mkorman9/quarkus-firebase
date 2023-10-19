@@ -92,6 +92,12 @@ public class FirebaseService {
                 @Override
                 public void onFailure(Throwable throwable) {
                     promise.fail(throwable);
+
+                    if (throwable.getCause() != null  // thrown on invalid/expired JWT token
+                        && !(throwable.getCause() instanceof IllegalArgumentException)  // thrown on malformed JWT token
+                    ) {
+                        log.error("Error while authorizing Firebase token", throwable);
+                    }
                 }
             },
             ExecutorRecorder.getCurrent()

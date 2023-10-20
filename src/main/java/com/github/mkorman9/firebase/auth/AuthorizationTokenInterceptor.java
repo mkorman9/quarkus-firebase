@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 
@@ -22,19 +23,27 @@ public class AuthorizationTokenInterceptor {
     FirebaseService firebaseService;
 
     @ServerRequestFilter(preMatching = true, priority = Priorities.AUTHORIZATION)
-    public Uni<Void> interceptRequest(ContainerRequestContext context) {
+    public Uni<Response> interceptRequest(ContainerRequestContext context) {
         var maybeToken = extractToken(context);
         if (maybeToken.isEmpty()) {
-            return Uni.createFrom().voidItem();
+            return Uni.createFrom().nullItem();
         }
 
         var token = maybeToken.get();
 
         return Uni.createFrom()
             .completionStage(() -> firebaseService.verifyTokenAsync(token).toCompletionStage())
-            .onItem().invoke(firebaseAuth -> context.setSecurityContext(createSecurityContext(firebaseAuth)))
-            .onFailure().recoverWithNull()
-            .replaceWithVoid();
+            .onItem().<Response>transform(firebaseAuth -> {
+                context.setSecurityContext(createSecurityContext(firebaseAuth));
+                return null;
+            })
+            .onFailure().recoverWithItem(throwable -> {
+                if (throwable instanceof AuthorizationServerException) {
+                    return Response.serverError().build();
+                }
+
+                return null;
+            });
     }
 
     private Optional<String> extractToken(ContainerRequestContext context) {

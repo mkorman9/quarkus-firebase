@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
@@ -39,24 +40,29 @@ public class FirebaseInitializer {
             // ignore
         }
 
-        FirebaseOptions firebaseOptions;
+        var firebaseOptions = createFirebaseOptions();
+        var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
+
+        // initialize services
+        FirebaseAuth.getInstance(firebaseApp);
+    }
+
+    private FirebaseOptions createFirebaseOptions() throws IOException {
         if (emulatorEnabled) {
             FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
-            firebaseOptions = FirebaseOptions.builder()
+            log.info("Firebase integration is running in emulator mode");
+
+            return FirebaseOptions.builder()
                 .setProjectId(emulatorProjectId)
                 .setCredentials(new EmulatorCredentials())
                 .build();
-
-            log.info("Firebase integration is running in emulator mode");
         } else {
-            firebaseOptions = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(new FileInputStream(credentialsPath)))
-                .build();
-
+            var credentialsStream = new FileInputStream(credentialsPath);
             log.info("Firebase integration is running in production mode");
-        }
 
-        var firebaseApp = FirebaseApp.initializeApp(firebaseOptions);
-        FirebaseAuth.getInstance(firebaseApp);
+            return FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                .build();
+        }
     }
 }

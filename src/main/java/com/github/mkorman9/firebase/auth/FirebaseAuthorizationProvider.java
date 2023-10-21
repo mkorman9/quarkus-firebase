@@ -1,20 +1,20 @@
 package com.github.mkorman9.firebase.auth;
 
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.SecurityContext;
 
 @RequestScoped
 public class FirebaseAuthorizationProvider {
     @Produces
-    public FirebaseAuthorization provideFirebaseAuthorization(@Context SecurityContext securityContext) {
-        if (securityContext == null) {
+    public FirebaseAuthorization provideFirebaseAuthorization(@Context SecurityIdentity securityIdentity) {
+        if (securityIdentity == null) {
             return null;
         }
 
         try {
-            return (FirebaseAuthorization) securityContext.getUserPrincipal();
+            return (FirebaseAuthorization) securityIdentity.getPrincipal();
         } catch (ClassCastException e) {
             return null;
         }

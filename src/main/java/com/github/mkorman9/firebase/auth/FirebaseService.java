@@ -8,10 +8,8 @@ import io.quarkus.runtime.ExecutorRecorder;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import jakarta.enterprise.context.ApplicationScoped;
-import lombok.extern.slf4j.Slf4j;
 
 @ApplicationScoped
-@Slf4j
 public class FirebaseService {
     public Future<FirebaseAuthorization> verifyTokenAsync(String token) {
         var promise = Promise.<FirebaseAuthorization>promise();
@@ -32,7 +30,6 @@ public class FirebaseService {
                         promise.fail(throwable);
                     } else {
                         promise.fail(new AuthorizationServerException(throwable));
-                        log.error("Error while authorizing Firebase token", throwable);
                     }
                 }
             },

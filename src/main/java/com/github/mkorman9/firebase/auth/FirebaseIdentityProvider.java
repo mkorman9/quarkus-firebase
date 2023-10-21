@@ -1,5 +1,6 @@
 package com.github.mkorman9.firebase.auth;
 
+import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.IdentityProvider;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -9,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
+@UnlessBuildProfile("test")
 public class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthenticationRequest> {
     @Inject
     FirebaseService firebaseService;

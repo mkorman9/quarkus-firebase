@@ -1,17 +1,26 @@
 package com.github.mkorman9.firebase.auth;
 
+import io.quarkus.security.identity.AuthenticationRequestContext;
+import io.quarkus.security.identity.IdentityProvider;
+import io.quarkus.security.identity.IdentityProviderManager;
+import io.quarkus.security.identity.SecurityIdentity;
+import io.quarkus.security.identity.request.AuthenticationRequest;
+import io.quarkus.security.identity.request.BaseAuthenticationRequest;
+import io.quarkus.security.runtime.QuarkusSecurityIdentity;
+import io.quarkus.vertx.http.runtime.security.ChallengeData;
+import io.quarkus.vertx.http.runtime.security.HttpAuthenticationMechanism;
+import io.smallrye.mutiny.Uni;
+import io.vertx.ext.web.RoutingContext;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.Priorities;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.core.SecurityContext;
-import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 import org.mockito.Mockito;
 
-import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 
 @ApplicationScoped
-public class TestAuthorizationConfig {
+public class TestAuthorizationConfig implements
+    HttpAuthenticationMechanism,
+    IdentityProvider<TestAuthorizationConfig.FakeFirebaseAuthenticationRequest> {
     private static final FirebaseAuthorization MOCK_AUTHORIZATION = Mockito.mock(FirebaseAuthorization.class);
     private static boolean isAuthorized = false;
 
@@ -54,34 +63,47 @@ public class TestAuthorizationConfig {
         isAuthorized = false;
     }
 
-    @ServerRequestFilter(preMatching = true, priority = Priorities.AUTHORIZATION)
-    public void enhanceRequest(ContainerRequestContext context) {
-        if (isAuthorized) {
-            context.setSecurityContext(createMockSecurityContext());
+    @Override
+    public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
+        if (!isAuthorized) {
+            return Uni.createFrom().nullItem();
         }
+
+        return identityProviderManager.authenticate(new FakeFirebaseAuthenticationRequest());
     }
 
-    private SecurityContext createMockSecurityContext() {
-        return new SecurityContext() {
-            @Override
-            public Principal getUserPrincipal() {
-                return MOCK_AUTHORIZATION;
-            }
+    @Override
+    public Uni<SecurityIdentity> authenticate(
+        FakeFirebaseAuthenticationRequest request,
+        AuthenticationRequestContext context
+    ) {
+        return Uni.createFrom().item(() ->
+            QuarkusSecurityIdentity.builder()
+                .setPrincipal(MOCK_AUTHORIZATION)
+                .build()
+        );
+    }
 
-            @Override
-            public boolean isUserInRole(String role) {
-                return false;
-            }
+    @Override
+    public Class<FakeFirebaseAuthenticationRequest> getRequestType() {
+        return FakeFirebaseAuthenticationRequest.class;
+    }
 
-            @Override
-            public boolean isSecure() {
-                return false;
-            }
+    @Override
+    public Set<Class<? extends AuthenticationRequest>> getCredentialTypes() {
+        return Set.of(FakeFirebaseAuthenticationRequest.class);
+    }
 
-            @Override
-            public String getAuthenticationScheme() {
-                return SecurityContext.DIGEST_AUTH;
-            }
-        };
+    @Override
+    public Uni<ChallengeData> getChallenge(RoutingContext context) {
+        return Uni.createFrom().nullItem();
+    }
+
+    @Override
+    public Uni<Boolean> sendChallenge(RoutingContext context) {
+        return Uni.createFrom().item(false);
+    }
+
+    public static class FakeFirebaseAuthenticationRequest extends BaseAuthenticationRequest {
     }
 }

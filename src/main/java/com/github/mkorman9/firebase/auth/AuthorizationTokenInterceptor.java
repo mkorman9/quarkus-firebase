@@ -17,7 +17,7 @@ import java.util.Optional;
 @UnlessBuildProfile("test")
 public class AuthorizationTokenInterceptor {
     private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String TOKEN_TYPE = "Bearer";
+    private static final String BEARER_TOKEN_TYPE = "Bearer";
 
     @Inject
     FirebaseService firebaseService;
@@ -47,19 +47,15 @@ public class AuthorizationTokenInterceptor {
     }
 
     private Optional<String> extractToken(ContainerRequestContext context) {
-        var headerValue = context
+        var header = context
             .getHeaders()
             .getFirst(AUTHORIZATION_HEADER);
-        if (headerValue == null) {
+        if (header == null || !header.startsWith(BEARER_TOKEN_TYPE)) {
             return Optional.empty();
         }
 
-        var headerParts = headerValue.split("\\s+");
-        if (headerParts.length != 2 || !headerParts[0].equalsIgnoreCase(TOKEN_TYPE)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(headerParts[1]);
+        var token = header.substring(BEARER_TOKEN_TYPE.length()).trim();
+        return Optional.of(token);
     }
 
     private SecurityContext createSecurityContext(FirebaseAuthorization authorization) {

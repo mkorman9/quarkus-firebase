@@ -14,7 +14,7 @@ import java.util.Set;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
-public class FirebaseAuthenticationMechanism implements HttpAuthenticationMechanism {
+class FirebaseAuthenticationMechanism implements HttpAuthenticationMechanism {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
 

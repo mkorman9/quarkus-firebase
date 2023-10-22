@@ -11,7 +11,7 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
-public class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthenticationRequest> {
+class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthenticationRequest> {
     @Inject
     FirebaseAuthenticationService firebaseAuthenticationService;
 

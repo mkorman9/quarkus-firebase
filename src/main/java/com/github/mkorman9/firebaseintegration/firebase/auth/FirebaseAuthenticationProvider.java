@@ -6,7 +6,7 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.ws.rs.core.Context;
 
 @RequestScoped
-public class FirebaseAuthenticationProvider {
+class FirebaseAuthenticationProvider {
     @Produces
     public FirebaseAuthentication provideFirebaseAuthentication(@Context SecurityIdentity securityIdentity) {
         if (securityIdentity == null) {

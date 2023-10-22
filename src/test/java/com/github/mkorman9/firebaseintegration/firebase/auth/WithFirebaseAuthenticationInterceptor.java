@@ -1,4 +1,4 @@
-package com.github.mkorman9.firebase.auth;
+package com.github.mkorman9.firebaseintegration.firebase.auth;
 
 import jakarta.annotation.Priority;
 import jakarta.interceptor.AroundInvoke;

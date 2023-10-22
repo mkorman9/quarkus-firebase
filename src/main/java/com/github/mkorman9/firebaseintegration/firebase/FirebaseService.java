@@ -1,5 +1,7 @@
-package com.github.mkorman9.firebase.auth;
+package com.github.mkorman9.firebaseintegration.firebase;
 
+import com.github.mkorman9.firebaseintegration.firebase.auth.AuthenticationServerException;
+import com.github.mkorman9.firebaseintegration.firebase.auth.FirebaseAuthentication;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.firebase.auth.FirebaseAuth;

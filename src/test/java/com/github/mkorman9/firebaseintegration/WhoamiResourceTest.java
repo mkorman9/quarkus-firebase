@@ -1,6 +1,6 @@
-package com.github.mkorman9.firebase;
+package com.github.mkorman9.firebaseintegration;
 
-import com.github.mkorman9.firebase.auth.WithFirebaseAuthentication;
+import com.github.mkorman9.firebaseintegration.firebase.auth.WithFirebaseAuthentication;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 

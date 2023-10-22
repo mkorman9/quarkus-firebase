@@ -1,6 +1,6 @@
-package com.github.mkorman9.firebase;
+package com.github.mkorman9.firebaseintegration;
 
-import com.github.mkorman9.firebase.auth.FirebaseAuthentication;
+import com.github.mkorman9.firebaseintegration.firebase.auth.FirebaseAuthentication;
 import io.quarkus.security.Authenticated;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

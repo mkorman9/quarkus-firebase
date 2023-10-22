@@ -1,41 +1,26 @@
 package com.github.mkorman9.firebaseintegration.firebase.auth;
 
-import com.google.api.core.ApiFutureCallback;
-import com.google.api.core.ApiFutures;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseToken;
-import io.quarkus.runtime.ExecutorRecorder;
-import io.vertx.core.Future;
-import io.vertx.core.Promise;
+import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FirebaseAuthenticationService {
-    public Future<FirebaseAuthentication> verifyTokenAsync(String token) {
-        var promise = Promise.<FirebaseAuthentication>promise();
-        var future = FirebaseAuth.getInstance().verifyIdTokenAsync(token);
-        ApiFutures.addCallback(
-            future,
-            new ApiFutureCallback<>() {
-                @Override
-                public void onSuccess(FirebaseToken firebaseToken) {
-                    promise.complete(new FirebaseAuthentication(firebaseToken));
-                }
+    public FirebaseAuthentication verifyToken(String token) {
+        try {
+            var firebaseToken = FirebaseAuth.getInstance().verifyIdToken(token);
+            return new FirebaseAuthentication(firebaseToken);
+        } catch (FirebaseAuthException e) {
+            if (isClientException(e)) {
+                throw new RuntimeException(e);
+            } else {
+                throw new AuthenticationServerException(e);
+            }
+        }
+    }
 
-                @Override
-                public void onFailure(Throwable throwable) {
-                    if (throwable.getCause() == null  // thrown on invalid/expired JWT token
-                        || throwable.getCause() instanceof IllegalArgumentException  // thrown on malformed JWT token
-                    ) {
-                        promise.fail(throwable);
-                    } else {
-                        promise.fail(new AuthenticationServerException(throwable));
-                    }
-                }
-            },
-            ExecutorRecorder.getCurrent()
-        );
-
-        return promise.future();
+    private boolean isClientException(FirebaseAuthException e) {
+        return e.getCause() == null  // thrown on invalid/expired JWT token
+            || e.getCause() instanceof IllegalArgumentException;  // thrown on malformed JWT token
     }
 }

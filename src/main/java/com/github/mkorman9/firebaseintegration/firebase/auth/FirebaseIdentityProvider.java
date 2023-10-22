@@ -20,15 +20,12 @@ class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthenticatio
         FirebaseAuthenticationRequest request,
         AuthenticationRequestContext context
     ) {
-        return Uni.createFrom()
-            .completionStage(() ->
-                firebaseAuthenticationService.verifyTokenAsync(request.getToken()).toCompletionStage()
-            )
-            .onItem().transform(firebaseAuth ->
-                QuarkusSecurityIdentity.builder()
-                    .setPrincipal(firebaseAuth)
-                    .build()
-            );
+        return context.runBlocking(() -> {
+            var authentication = firebaseAuthenticationService.verifyToken(request.getToken());
+            return QuarkusSecurityIdentity.builder()
+                .setPrincipal(authentication)
+                .build();
+        });
     }
 
     @Override

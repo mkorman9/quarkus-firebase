@@ -5,10 +5,10 @@ import com.google.firebase.auth.FirebaseToken;
 import java.security.Principal;
 import java.util.Map;
 
-public class FirebaseAuthorization implements Principal {
+public class FirebaseAuthentication implements Principal {
     private final FirebaseToken firebaseToken;
 
-    public FirebaseAuthorization(FirebaseToken firebaseToken) {
+    public FirebaseAuthentication(FirebaseToken firebaseToken) {
         this.firebaseToken = firebaseToken;
     }
 

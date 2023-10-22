@@ -28,7 +28,7 @@ public class FirebaseAuthenticationMechanism implements HttpAuthenticationMechan
         var token = header.substring(BEARER_TOKEN_TYPE.length()).trim();
         return identityProviderManager.authenticate(new FirebaseAuthenticationRequest(token))
             .onFailure().recoverWithItem(throwable -> {
-                if (throwable instanceof AuthorizationServerException) {
+                if (throwable instanceof AuthenticationServerException) {
                     context.fail(throwable);
                 }
 

@@ -11,15 +11,15 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class FirebaseService {
-    public Future<FirebaseAuthorization> verifyTokenAsync(String token) {
-        var promise = Promise.<FirebaseAuthorization>promise();
+    public Future<FirebaseAuthentication> verifyTokenAsync(String token) {
+        var promise = Promise.<FirebaseAuthentication>promise();
         var future = FirebaseAuth.getInstance().verifyIdTokenAsync(token);
         ApiFutures.addCallback(
             future,
             new ApiFutureCallback<>() {
                 @Override
                 public void onSuccess(FirebaseToken firebaseToken) {
-                    promise.complete(new FirebaseAuthorization(firebaseToken));
+                    promise.complete(new FirebaseAuthentication(firebaseToken));
                 }
 
                 @Override
@@ -29,7 +29,7 @@ public class FirebaseService {
                     ) {
                         promise.fail(throwable);
                     } else {
-                        promise.fail(new AuthorizationServerException(throwable));
+                        promise.fail(new AuthenticationServerException(throwable));
                     }
                 }
             },

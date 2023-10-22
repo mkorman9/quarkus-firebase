@@ -6,15 +6,15 @@ import jakarta.enterprise.inject.Produces;
 import jakarta.ws.rs.core.Context;
 
 @RequestScoped
-public class FirebaseAuthorizationProvider {
+public class FirebaseAuthenticationProvider {
     @Produces
-    public FirebaseAuthorization provideFirebaseAuthorization(@Context SecurityIdentity securityIdentity) {
+    public FirebaseAuthentication provideFirebaseAuthentication(@Context SecurityIdentity securityIdentity) {
         if (securityIdentity == null) {
             return null;
         }
 
         try {
-            return (FirebaseAuthorization) securityIdentity.getPrincipal();
+            return (FirebaseAuthentication) securityIdentity.getPrincipal();
         } catch (ClassCastException e) {
             return null;
         }

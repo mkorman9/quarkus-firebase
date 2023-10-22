@@ -1,6 +1,6 @@
 package com.github.mkorman9.firebase;
 
-import com.github.mkorman9.firebase.auth.WithFirebaseAuthorization;
+import com.github.mkorman9.firebase.auth.WithFirebaseAuthentication;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 class WhoamiResourceTest {
     @Test
-    @WithFirebaseAuthorization(uid = "test_user")
+    @WithFirebaseAuthentication(uid = "test_user")
     public void shouldAuthorizeWithProperUid() {
         // given when
         var whoami = given()

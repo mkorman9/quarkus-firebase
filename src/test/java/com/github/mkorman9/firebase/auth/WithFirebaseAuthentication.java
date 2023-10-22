@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @InterceptorBinding
-public @interface WithFirebaseAuthorization {
+public @interface WithFirebaseAuthentication {
     @Nonbinding
     String uid() default "default_firebase_uid";
 

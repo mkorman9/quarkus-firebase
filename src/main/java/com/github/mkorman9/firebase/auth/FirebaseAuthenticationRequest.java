@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class FirebaseAuthenticationRequest extends BaseAuthenticationRequest {
+class FirebaseAuthenticationRequest extends BaseAuthenticationRequest {
     private final String token;
 }

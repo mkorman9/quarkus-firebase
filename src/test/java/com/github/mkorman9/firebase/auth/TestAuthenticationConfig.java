@@ -18,54 +18,54 @@ import java.util.Map;
 import java.util.Set;
 
 @ApplicationScoped
-public class TestAuthorizationConfig implements
+public class TestAuthenticationConfig implements
     HttpAuthenticationMechanism,
-    IdentityProvider<TestAuthorizationConfig.FakeFirebaseAuthenticationRequest> {
-    private static final FirebaseAuthorization MOCK_AUTHORIZATION = Mockito.mock(FirebaseAuthorization.class);
-    private static boolean isAuthorized = false;
+    IdentityProvider<TestAuthenticationConfig.FakeFirebaseAuthenticationRequest> {
+    private static final FirebaseAuthentication MOCK_AUTHENTICATION = Mockito.mock(FirebaseAuthentication.class);
+    private static boolean isAuthenticated = false;
 
     public static void mockUid(String uid) {
-        Mockito.when(MOCK_AUTHORIZATION.getUid()).thenReturn(uid);
-        Mockito.when(MOCK_AUTHORIZATION.getName()).thenReturn(uid);
-        isAuthorized = true;
+        Mockito.when(MOCK_AUTHENTICATION.getUid()).thenReturn(uid);
+        Mockito.when(MOCK_AUTHENTICATION.getName()).thenReturn(uid);
+        isAuthenticated = true;
     }
 
     public static void mockTenantId(String tenantId) {
-        Mockito.when(MOCK_AUTHORIZATION.getTenantId()).thenReturn(tenantId);
+        Mockito.when(MOCK_AUTHENTICATION.getTenantId()).thenReturn(tenantId);
     }
 
     public static void mockIssuer(String issuer) {
-        Mockito.when(MOCK_AUTHORIZATION.getIssuer()).thenReturn(issuer);
+        Mockito.when(MOCK_AUTHENTICATION.getIssuer()).thenReturn(issuer);
     }
 
     public static void mockDisplayName(String displayName) {
-        Mockito.when(MOCK_AUTHORIZATION.getDisplayName()).thenReturn(displayName);
+        Mockito.when(MOCK_AUTHENTICATION.getDisplayName()).thenReturn(displayName);
     }
 
     public static void mockPicture(String picture) {
-        Mockito.when(MOCK_AUTHORIZATION.getPicture()).thenReturn(picture);
+        Mockito.when(MOCK_AUTHENTICATION.getPicture()).thenReturn(picture);
     }
 
     public static void mockEmail(String email) {
-        Mockito.when(MOCK_AUTHORIZATION.getEmail()).thenReturn(email);
+        Mockito.when(MOCK_AUTHENTICATION.getEmail()).thenReturn(email);
     }
 
     public static void mockEmailVerified(boolean isEmailVerified) {
-        Mockito.when(MOCK_AUTHORIZATION.isEmailVerified()).thenReturn(isEmailVerified);
+        Mockito.when(MOCK_AUTHENTICATION.isEmailVerified()).thenReturn(isEmailVerified);
     }
 
     public static void mockClaims(Map<String, Object> claims) {
-        Mockito.when(MOCK_AUTHORIZATION.getClaims()).thenReturn(claims);
+        Mockito.when(MOCK_AUTHENTICATION.getClaims()).thenReturn(claims);
     }
 
     public static void reset() {
-        Mockito.reset(MOCK_AUTHORIZATION);
-        isAuthorized = false;
+        Mockito.reset(MOCK_AUTHENTICATION);
+        isAuthenticated = false;
     }
 
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
-        if (!isAuthorized) {
+        if (!isAuthenticated) {
             return Uni.createFrom().nullItem();
         }
 
@@ -79,7 +79,7 @@ public class TestAuthorizationConfig implements
     ) {
         return Uni.createFrom().item(() ->
             QuarkusSecurityIdentity.builder()
-                .setPrincipal(MOCK_AUTHORIZATION)
+                .setPrincipal(MOCK_AUTHENTICATION)
                 .build()
         );
     }

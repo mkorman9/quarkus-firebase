@@ -17,6 +17,7 @@ import java.util.Set;
 class FirebaseAuthenticationMechanism implements HttpAuthenticationMechanism {
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_TOKEN_TYPE = "Bearer";
+    private static final int BEARER_TOKEN_TYPE_LENGTH = BEARER_TOKEN_TYPE.length();
 
     @Override
     public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
@@ -25,7 +26,7 @@ class FirebaseAuthenticationMechanism implements HttpAuthenticationMechanism {
             return Uni.createFrom().nullItem();
         }
 
-        var token = header.substring(BEARER_TOKEN_TYPE.length()).trim();
+        var token = header.substring(BEARER_TOKEN_TYPE_LENGTH).trim();
         return identityProviderManager.authenticate(new FirebaseAuthenticationRequest(token))
             .onFailure().recoverWithItem(throwable -> {
                 if (throwable instanceof AuthenticationServerException) {

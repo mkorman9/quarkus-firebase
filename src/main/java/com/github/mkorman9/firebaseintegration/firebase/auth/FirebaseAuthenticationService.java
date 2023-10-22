@@ -1,7 +1,5 @@
-package com.github.mkorman9.firebaseintegration.firebase;
+package com.github.mkorman9.firebaseintegration.firebase.auth;
 
-import com.github.mkorman9.firebaseintegration.firebase.auth.AuthenticationServerException;
-import com.github.mkorman9.firebaseintegration.firebase.auth.FirebaseAuthentication;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.firebase.auth.FirebaseAuth;
@@ -12,7 +10,7 @@ import io.vertx.core.Promise;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class FirebaseService {
+public class FirebaseAuthenticationService {
     public Future<FirebaseAuthentication> verifyTokenAsync(String token) {
         var promise = Promise.<FirebaseAuthentication>promise();
         var future = FirebaseAuth.getInstance().verifyIdTokenAsync(token);

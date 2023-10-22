@@ -1,6 +1,5 @@
 package com.github.mkorman9.firebaseintegration.firebase.auth;
 
-import com.github.mkorman9.firebaseintegration.firebase.FirebaseService;
 import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.IdentityProvider;
@@ -14,7 +13,7 @@ import jakarta.inject.Inject;
 @UnlessBuildProfile("test")
 public class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthenticationRequest> {
     @Inject
-    FirebaseService firebaseService;
+    FirebaseAuthenticationService firebaseAuthenticationService;
 
     @Override
     public Uni<SecurityIdentity> authenticate(
@@ -22,7 +21,9 @@ public class FirebaseIdentityProvider implements IdentityProvider<FirebaseAuthen
         AuthenticationRequestContext context
     ) {
         return Uni.createFrom()
-            .completionStage(() -> firebaseService.verifyTokenAsync(request.getToken()).toCompletionStage())
+            .completionStage(() ->
+                firebaseAuthenticationService.verifyTokenAsync(request.getToken()).toCompletionStage()
+            )
             .onItem().transform(firebaseAuth ->
                 QuarkusSecurityIdentity.builder()
                     .setPrincipal(firebaseAuth)

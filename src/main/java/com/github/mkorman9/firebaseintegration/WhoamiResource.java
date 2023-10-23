@@ -15,7 +15,7 @@ public class WhoamiResource {
     @Path("/secured")
     @Authenticated
     public WhoamiResponse getWhoamiSecured(@Context FirebaseAuthentication authentication) {
-        return new WhoamiResponse(authentication.getUid());
+        return new WhoamiResponse(authentication.uid());
     }
 
     @GET

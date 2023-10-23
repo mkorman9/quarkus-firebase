@@ -9,7 +9,7 @@ public class FirebaseAuthenticationService {
     public FirebaseAuthentication verifyToken(String token) {
         try {
             var firebaseToken = FirebaseAuth.getInstance().verifyIdToken(token);
-            return new FirebaseAuthentication(firebaseToken);
+            return FirebaseAuthentication.from(firebaseToken);
         } catch (FirebaseAuthException e) {
             if (isClientException(e)) {
                 throw new RuntimeException(e);

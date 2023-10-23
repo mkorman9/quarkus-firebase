@@ -20,7 +20,10 @@ class FirebaseAuthenticationMechanism implements HttpAuthenticationMechanism {
     private static final int BEARER_TOKEN_TYPE_LENGTH = BEARER_TOKEN_TYPE.length();
 
     @Override
-    public Uni<SecurityIdentity> authenticate(RoutingContext context, IdentityProviderManager identityProviderManager) {
+    public Uni<SecurityIdentity> authenticate(
+        RoutingContext context,
+        IdentityProviderManager identityProviderManager
+    ) {
         var header = context.request().getHeader(AUTHORIZATION_HEADER);
         if (header == null || !header.startsWith(BEARER_TOKEN_TYPE)) {
             return Uni.createFrom().nullItem();

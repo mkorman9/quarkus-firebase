@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @InterceptorBinding
 public @interface WithFirebaseAuthentication {
     @Nonbinding
-    String uid() default "default_firebase_uid";
+    String uid() default "0000000000000000000000000000";
 
     @Nonbinding
     String tenantId() default "";

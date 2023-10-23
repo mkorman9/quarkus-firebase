@@ -32,4 +32,7 @@ public @interface WithFirebaseAuthentication {
 
     @Nonbinding
     boolean isEmailVerified() default false;
+
+    @Nonbinding
+    FirebaseClaim[] claims() default {};
 }

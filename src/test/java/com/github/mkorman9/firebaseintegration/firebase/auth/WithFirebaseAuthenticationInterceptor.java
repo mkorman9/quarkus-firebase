@@ -5,7 +5,8 @@ import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @WithFirebaseAuthentication
 @Priority(Interceptor.Priority.PLATFORM_AFTER)
@@ -22,7 +23,8 @@ public class WithFirebaseAuthenticationInterceptor {
             withFirebaseAuthentication.picture(),
             withFirebaseAuthentication.email(),
             withFirebaseAuthentication.isEmailVerified(),
-            new HashMap<>()
+            Arrays.stream(withFirebaseAuthentication.claims())
+                .collect(Collectors.toMap(FirebaseClaim::name, FirebaseClaim::value))
         ));
 
         var ret = context.proceed();

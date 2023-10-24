@@ -30,14 +30,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.30</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Quarkus -->
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -58,11 +50,6 @@
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>9.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.13.0</version>
         </dependency>
 
         <!-- Test -->
@@ -117,7 +104,6 @@
                 <version>3.11.0</version>
                 <configuration>
                     <compilerArgs>
-                        <arg>-proc:full</arg>
                         <arg>-parameters</arg>
                     </compilerArgs>
                 </configuration>

@@ -10,16 +10,18 @@ import io.quarkus.arc.profile.UnlessBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
-import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
-@Slf4j
 public class FirebaseInitializer {
+    private static final Logger LOG = LoggerFactory.getLogger(FirebaseInitializer.class);
+
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
 
@@ -50,7 +52,7 @@ public class FirebaseInitializer {
     private FirebaseOptions createFirebaseOptions() throws IOException {
         if (emulatorEnabled) {
             FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
-            log.info("Firebase integration is running in emulator mode");
+            LOG.info("Firebase integration is running in emulator mode");
 
             return FirebaseOptions.builder()
                 .setProjectId(emulatorProjectId)
@@ -58,7 +60,7 @@ public class FirebaseInitializer {
                 .build();
         } else {
             var credentialsStream = new FileInputStream(credentialsPath);
-            log.info("Firebase integration is running in production mode");
+            LOG.info("Firebase integration is running in production mode");
 
             return FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(credentialsStream))

@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <quarkus.version>3.4.3</quarkus.version>
+        <quarkus.version>3.5.0</quarkus.version>
     </properties>
 
     <dependencyManagement>
@@ -104,6 +104,7 @@
                 <version>3.11.0</version>
                 <configuration>
                     <compilerArgs>
+                        <arg>-proc:full</arg>
                         <arg>-parameters</arg>
                     </compilerArgs>
                 </configuration>

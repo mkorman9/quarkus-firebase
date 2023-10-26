@@ -20,7 +20,7 @@ import java.io.IOException;
 @ApplicationScoped
 @UnlessBuildProfile("test")
 public class FirebaseInitializer {
-    private static final Logger LOG = LoggerFactory.getLogger(FirebaseInitializer.class);
+    private static final Logger log = LoggerFactory.getLogger(FirebaseInitializer.class);
 
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
@@ -52,7 +52,7 @@ public class FirebaseInitializer {
     private FirebaseOptions createFirebaseOptions() throws IOException {
         if (emulatorEnabled) {
             FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
-            LOG.info("Firebase integration is running in emulator mode");
+            log.info("Firebase integration is running in emulator mode");
 
             return FirebaseOptions.builder()
                 .setProjectId(emulatorProjectId)
@@ -60,7 +60,7 @@ public class FirebaseInitializer {
                 .build();
         } else {
             var credentialsStream = new FileInputStream(credentialsPath);
-            LOG.info("Firebase integration is running in production mode");
+            log.info("Firebase integration is running in production mode");
 
             return FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(credentialsStream))

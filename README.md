@@ -24,6 +24,7 @@ npm run-script generate-for-emulator
 - Go to Project settings -> Service accounts -> Generate new private key, save it as `firebase-credentials.json` 
 in the project root directory
 - Comment out `%dev.firebase.emulator.enabled=true` in `application.properties` file
+- Add `firebase.credentials.type=FILE` to `application.properties` file
 - Run the app via IDE
 - Tokens for testing can be generated with
 ```sh
@@ -34,12 +35,16 @@ npm run-script generate-for-production
 
 ## Setup application container
 
-On production `firebase.credentials-path` property should be set up and point to mounted credentials file
+On production, credentials either need to be defined by the platform, as pointed 
+[here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__), 
+or `firebase.credentials.type=FILE` and `firebase.credentials.path=<PATH>` needs to be provided. 
+`firebase.credentials.path` property should point to mounted credentials file.
 
 ```properties
 # application.properties
 
-firebase.credentials-path=/config/firebase-credentials.json
+firebase.credentials.type=FILE
+firebase.credentials.path=/config/firebase-credentials.json
 ```
 
 ```yaml

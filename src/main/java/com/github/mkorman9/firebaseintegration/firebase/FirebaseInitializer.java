@@ -31,7 +31,10 @@ public class FirebaseInitializer {
     @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")
     String authEmulatorUrl;
 
-    @ConfigProperty(name = "firebase.credentials-path", defaultValue = "firebase-credentials.json")
+    @ConfigProperty(name = "firebase.credentials.type", defaultValue = "PLATFORM")
+    CredentialsType credentialsType;
+
+    @ConfigProperty(name = "firebase.credentials.path", defaultValue = "firebase-credentials.json")
     String credentialsPath;
 
     public void onStartup(@Observes StartupEvent startupEvent) throws Exception {
@@ -59,12 +62,28 @@ public class FirebaseInitializer {
                 .setCredentials(new EmulatorCredentials())
                 .build();
         } else {
-            var credentialsStream = new FileInputStream(credentialsPath);
             log.info("Firebase integration is running in production mode");
 
-            return FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(credentialsStream))
-                .build();
+            switch (credentialsType) {
+                case PLATFORM -> {
+                    return FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.getApplicationDefault())
+                        .build();
+                }
+                case FILE -> {
+                    var credentialsStream = new FileInputStream(credentialsPath);
+                    return FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                        .build();
+                }
+            }
+
+            throw new IllegalStateException("Invalid Firebase credentials type");
         }
+    }
+
+    public enum CredentialsType {
+        PLATFORM,
+        FILE
     }
 }

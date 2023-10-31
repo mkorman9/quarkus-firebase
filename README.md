@@ -60,3 +60,11 @@ services:
       - "${PWD}/application.properties:/config/application.properties:ro"
       - "${PWD}/firebase-credentials.json:/config/firebase-credentials.json:ro"
 ```
+
+When mounting a file is not possible due to environment restrictions, credentials can also be passed as a 
+base64-encoded environment variable
+
+```
+FIREBASE_CREDENTIALS_TYPE=CONTENT
+FIREBASE_CREDENTIALS_CONTENT=<base64-encoded firebase-credentials.json file>
+```

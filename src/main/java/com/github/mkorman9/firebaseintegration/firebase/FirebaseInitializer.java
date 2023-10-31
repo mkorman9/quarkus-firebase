@@ -14,13 +14,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
 public class FirebaseInitializer {
     private static final Logger log = LoggerFactory.getLogger(FirebaseInitializer.class);
+    private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
 
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
@@ -36,6 +39,9 @@ public class FirebaseInitializer {
 
     @ConfigProperty(name = "firebase.credentials.path", defaultValue = "firebase-credentials.json")
     String credentialsPath;
+
+    @ConfigProperty(name = "firebase.credentials.content", defaultValue = "e30K")
+    String credentialsContent;
 
     public void onStartup(@Observes StartupEvent startupEvent) throws Exception {
         // delete default app instance to prevent problems with hot reloads
@@ -76,6 +82,12 @@ public class FirebaseInitializer {
                         .setCredentials(GoogleCredentials.fromStream(credentialsStream))
                         .build();
                 }
+                case CONTENT -> {
+                    var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent));
+                    return FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
+                        .build();
+                }
             }
 
             throw new IllegalStateException("Invalid Firebase credentials type");
@@ -84,6 +96,7 @@ public class FirebaseInitializer {
 
     public enum CredentialsType {
         PLATFORM,
-        FILE
+        FILE,
+        CONTENT
     }
 }

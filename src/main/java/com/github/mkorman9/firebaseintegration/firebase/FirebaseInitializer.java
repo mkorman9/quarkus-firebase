@@ -34,16 +34,13 @@ public class FirebaseInitializer {
     @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")
     String authEmulatorUrl;
 
-    @ConfigProperty(name = "firebase.credentials.type", defaultValue = "PLATFORM")
-    CredentialsType credentialsType;
-
     @ConfigProperty(name = "firebase.credentials.path", defaultValue = "firebase-credentials.json")
     String credentialsPath;
 
     @ConfigProperty(name = "firebase.credentials.content", defaultValue = "e30K")
     String credentialsContent;
 
-    public void onStartup(@Observes StartupEvent startupEvent) throws Exception {
+    public void onStartup(@Observes StartupEvent startupEvent) {
         // delete default app instance to prevent problems with hot reloads
         try {
             FirebaseApp.getInstance().delete();
@@ -58,7 +55,7 @@ public class FirebaseInitializer {
         FirebaseAuth.getInstance(firebaseApp);
     }
 
-    private FirebaseOptions createFirebaseOptions() throws IOException {
+    private FirebaseOptions createFirebaseOptions() {
         if (emulatorEnabled) {
             FirebaseProcessEnvironment.setenv("FIREBASE_AUTH_EMULATOR_HOST", authEmulatorUrl);
             log.info("Firebase integration is running in emulator mode");
@@ -70,33 +67,36 @@ public class FirebaseInitializer {
         } else {
             log.info("Firebase integration is running in production mode");
 
-            switch (credentialsType) {
-                case PLATFORM -> {
-                    return FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.getApplicationDefault())
-                        .build();
-                }
-                case FILE -> {
-                    var credentialsStream = new FileInputStream(credentialsPath);
-                    return FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
-                        .build();
-                }
-                case CONTENT -> {
-                    var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent));
-                    return FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(credentialsStream))
-                        .build();
-                }
-            }
-
-            throw new IllegalStateException("Invalid Firebase credentials type");
+            var credentials = resolveCredentials();
+            return FirebaseOptions.builder()
+                .setCredentials(credentials)
+                .build();
         }
     }
 
-    public enum CredentialsType {
-        PLATFORM,
-        FILE,
-        CONTENT
+    private GoogleCredentials resolveCredentials() {
+        // base64-encoded embedded credentials
+        try {
+            var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent));
+            return GoogleCredentials.fromStream(credentialsStream);
+        } catch (IOException e) {
+            // ignore
+        }
+
+        // file credentials
+        try (var credentialsStream = new FileInputStream(credentialsPath)) {
+            return GoogleCredentials.fromStream(credentialsStream);
+        } catch (IOException e) {
+            // ignore
+        }
+
+        // platform-default credentials
+        try {
+            return GoogleCredentials.getApplicationDefault();
+        } catch (IOException e) {
+            // ignore
+        }
+
+        throw new IllegalStateException("Unable to resolve Firebase credentials");
     }
 }

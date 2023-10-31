@@ -24,7 +24,6 @@ npm run-script generate-for-emulator
 - Go to Project settings -> Service accounts -> Generate new private key, save it as `firebase-credentials.json` 
 in the project root directory
 - Comment out `%dev.firebase.emulator.enabled=true` in `application.properties` file
-- Add `firebase.credentials.type=FILE` to `application.properties` file
 - Run the app via IDE
 - Tokens for testing can be generated with
 ```sh
@@ -33,17 +32,16 @@ npm ci
 npm run-script generate-for-production
 ```
 
-## Setup application container
+## Credentials sourcing
 
-On production, credentials either need to be defined by the platform, as pointed 
-[here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__), 
-or `firebase.credentials.type=FILE` and `firebase.credentials.path=<PATH>` needs to be provided. 
-`firebase.credentials.path` property should point to mounted credentials file.
+Credentials can be sourced by the following methods:
+- Defined by the platform (for example, when running on Google Cloud), as pointed [here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__)
+- Via `firebase-credentials.json` file. Its path can be changed via `firebase.credentials.path=<PATH>` property.
+For example:
 
 ```properties
 # application.properties
 
-firebase.credentials.type=FILE
 firebase.credentials.path=/config/firebase-credentials.json
 ```
 
@@ -61,10 +59,8 @@ services:
       - "${PWD}/firebase-credentials.json:/config/firebase-credentials.json:ro"
 ```
 
-When mounting a file is not possible due to environment restrictions, credentials can also be passed as a 
-base64-encoded environment variable
+- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `firebase-credentials.json`.
 
-```
-FIREBASE_CREDENTIALS_TYPE=CONTENT
-FIREBASE_CREDENTIALS_CONTENT=<base64-encoded firebase-credentials.json file>
+```sh
+docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS_CONTENT="<CONTENT>" quarkus-firebase
 ```

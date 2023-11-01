@@ -76,8 +76,7 @@ public class FirebaseInitializer {
 
     private GoogleCredentials resolveCredentials() {
         // base64-encoded embedded credentials
-        try {
-            var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent));
+        try (var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent))) {
             return GoogleCredentials.fromStream(credentialsStream);
         } catch (IOException e) {
             // ignore

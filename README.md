@@ -21,7 +21,7 @@ npm run-script generate-for-emulator
 ## Start locally without emulator
 
 - Navigate to [Firebase Console](https://console.firebase.google.com) and create a project
-- Go to Project settings -> Service accounts -> Generate new private key, save it as `firebase-credentials.json` 
+- Go to Project settings -> Service accounts -> Generate new private key, save it as `serviceAccountKey.json` 
 in the project root directory
 - Comment out `%dev.firebase.emulator.enabled=true` in `application.properties` file
 - Run the app via IDE
@@ -36,19 +36,19 @@ npm run-script generate-for-production
 
 The app tries to source credentials in 3 different ways, in this exact order:
 
-- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `firebase-credentials.json`.
+- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `serviceAccountKey.json`.
 
 ```sh
 docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS_CONTENT="<CONTENT>" quarkus-firebase
 ```
 
-- Via `firebase-credentials.json` file. Its path can be changed via `firebase.credentials.path=<PATH>` property.
+- Via `serviceAccountKey.json` file. Its path can be changed via `firebase.credentials.path=<PATH>` property.
 For example:
 
 ```properties
 # application.properties
 
-firebase.credentials.path=/config/firebase-credentials.json
+firebase.credentials.path=/config/serviceAccountKey.json
 ```
 
 ```yaml
@@ -62,7 +62,7 @@ services:
       - "8080:8080"
     volumes:
       - "${PWD}/application.properties:/config/application.properties:ro"
-      - "${PWD}/firebase-credentials.json:/config/firebase-credentials.json:ro"
+      - "${PWD}/serviceAccountKey.json:/config/serviceAccountKey.json:ro"
 ```
 
 - Via default platform credentials (for example, when running on Google Cloud), as pointed [here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__)

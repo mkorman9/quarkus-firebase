@@ -34,7 +34,7 @@ public class FirebaseInitializer {
     @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")
     String authEmulatorUrl;
 
-    @ConfigProperty(name = "firebase.credentials.path", defaultValue = "firebase-credentials.json")
+    @ConfigProperty(name = "firebase.credentials.path", defaultValue = "serviceAccountKey.json")
     String credentialsPath;
 
     @ConfigProperty(name = "firebase.credentials.content", defaultValue = "e30K")

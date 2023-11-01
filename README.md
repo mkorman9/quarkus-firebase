@@ -34,8 +34,14 @@ npm run-script generate-for-production
 
 ## Credentials sourcing
 
-Credentials can be sourced by the following methods:
-- Defined by the platform (for example, when running on Google Cloud), as pointed [here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__)
+The app tries to source credentials in 3 different ways, in this exact order:
+
+- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `firebase-credentials.json`.
+
+```sh
+docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS_CONTENT="<CONTENT>" quarkus-firebase
+```
+
 - Via `firebase-credentials.json` file. Its path can be changed via `firebase.credentials.path=<PATH>` property.
 For example:
 
@@ -59,8 +65,6 @@ services:
       - "${PWD}/firebase-credentials.json:/config/firebase-credentials.json:ro"
 ```
 
-- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `firebase-credentials.json`.
+- Via default platform credentials (for example, when running on Google Cloud), as pointed [here](https://cloud.google.com/java/docs/reference/google-auth-library/latest/com.google.auth.oauth2.GoogleCredentials#com_google_auth_oauth2_GoogleCredentials_getApplicationDefault__)
 
-```sh
-docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS_CONTENT="<CONTENT>" quarkus-firebase
-```
+If all the methods above fail than the app refuses to start.

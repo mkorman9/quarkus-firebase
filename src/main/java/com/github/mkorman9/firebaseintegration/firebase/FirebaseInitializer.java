@@ -17,13 +17,11 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Base64;
 
 @ApplicationScoped
 @UnlessBuildProfile("test")
 public class FirebaseInitializer {
     private static final Logger log = LoggerFactory.getLogger(FirebaseInitializer.class);
-    private static final Base64.Decoder BASE_64_DECODER = Base64.getDecoder();
 
     @ConfigProperty(name = "firebase.emulator.enabled", defaultValue = "false")
     boolean emulatorEnabled;
@@ -34,11 +32,11 @@ public class FirebaseInitializer {
     @ConfigProperty(name = "firebase.auth.emulator-url", defaultValue = "127.0.0.1:9099")
     String authEmulatorUrl;
 
+    @ConfigProperty(name = "firebase.credentials", defaultValue = "{}")
+    String credentialsContent;
+
     @ConfigProperty(name = "firebase.credentials.path", defaultValue = "serviceAccountKey.json")
     String credentialsPath;
-
-    @ConfigProperty(name = "firebase.credentials.content", defaultValue = "e30K")
-    String credentialsContent;
 
     public void onStartup(@Observes StartupEvent startupEvent) {
         // delete default app instance to prevent problems with hot reloads
@@ -75,21 +73,21 @@ public class FirebaseInitializer {
     }
 
     private GoogleCredentials resolveCredentials() {
-        // base64-encoded embedded credentials
-        try (var credentialsStream = new ByteArrayInputStream(BASE_64_DECODER.decode(credentialsContent))) {
+        // try environment variable
+        try (var credentialsStream = new ByteArrayInputStream(credentialsContent.getBytes())) {
             return GoogleCredentials.fromStream(credentialsStream);
         } catch (IOException e) {
             // ignore
         }
 
-        // file credentials
+        // try file
         try (var credentialsStream = new FileInputStream(credentialsPath)) {
             return GoogleCredentials.fromStream(credentialsStream);
         } catch (IOException e) {
             // ignore
         }
 
-        // platform-default credentials
+        // try platform-default credentials
         try {
             return GoogleCredentials.getApplicationDefault();
         } catch (IOException e) {

@@ -36,10 +36,11 @@ npm run-script generate-for-production
 
 The app tries to source credentials in 3 different ways, in this exact order:
 
-- Via `FIREBASE_CREDENTIALS_CONTENT` environment variable, containing base64-encoded content of `serviceAccountKey.json`.
+- Via `FIREBASE_CREDENTIALS` environment variable, containing the content of `serviceAccountKey.json`.
 
 ```sh
-docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS_CONTENT="<CONTENT>" quarkus-firebase
+creds="$(cat serviceAccountKey.json | jq -r tostring)"
+docker run -it --rm -p 8080:8080 -e FIREBASE_CREDENTIALS="${creds}" quarkus-firebase
 ```
 
 - Via `serviceAccountKey.json` file. Its path can be changed via `firebase.credentials.path=<PATH>` property.
